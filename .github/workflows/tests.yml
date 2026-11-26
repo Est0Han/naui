@@ -55,3 +55,4 @@ jobs:
           xvfb-run -a dbus-run-session -- python3 tests/shutdown_smoke.py --iterations 10
           xvfb-run -a dbus-run-session -- python3 tests/executable_smoke.py
           xvfb-run -a dbus-run-session -- python3 tests/rpf_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/binary_smoke.py

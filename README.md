@@ -88,6 +88,7 @@ GTK libraries and introspection bindings.
 - Workspace search and Git changes, staging, diffs and history.
 - Optional Python code navigation through Pyright.
 - Image, audio and video previews using installed system codecs.
+- BIN previews with embedded strings, text, and hexadecimal bytes.
 - EXE/DLL inspection, plus optional Ghidra C-like decompilation previews.
 - Optional RPF archive browsing and extraction through OpenRAGE.
 - Plugin API and example plugins; no personal AI chat plugin is bundled.

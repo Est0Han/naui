@@ -4,6 +4,7 @@ def start(api):
     from .viewers import AudioViewer, ImageViewer, VideoViewer, UnsupportedViewer
     from .executable_viewer import ExecutableViewer
     from .rpf_viewer import RpfViewer
+    from .binary_viewer import BinaryViewer
     api.register_feature('viewer_specs', DEFAULT_VIEWERS)
-    api.register_feature('viewer_factories', {'executable': ExecutableViewer, 'rpf': RpfViewer, 'image': ImageViewer, 'audio': AudioViewer,
+    api.register_feature('viewer_factories', {'binary': BinaryViewer, 'executable': ExecutableViewer, 'rpf': RpfViewer, 'image': ImageViewer, 'audio': AudioViewer,
                          'video': VideoViewer, 'unsupported': UnsupportedViewer})

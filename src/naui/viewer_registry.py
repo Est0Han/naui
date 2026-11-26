@@ -24,6 +24,7 @@ class ViewerSpec:
 
 
 DEFAULT_VIEWERS = (
+    ViewerSpec("binary", (), (".bin",)),
     ViewerSpec("executable", ("application/x-dosexec", "application/vnd.microsoft.portable-executable"), (".exe", ".dll")),
     ViewerSpec("rpf", ("application/x-rage-rpf",), (".rpf",)),
     ViewerSpec("image", ("image/png", "image/jpeg", "image/webp", "image/gif", "image/bmp", "image/x-ms-bmp"),
