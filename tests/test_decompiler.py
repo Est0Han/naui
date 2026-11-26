@@ -35,3 +35,28 @@ class DecompilerTests(unittest.TestCase):
                 with patch('naui.decompiler.ghidra_path',return_value=helper):
                     with self.assertRaisesRegex(ValueError,'cancelled'):decompile(binary,event)
             finally:timer.join()
+
+
+class GhidraReadabilityTests(unittest.TestCase):
+    @unittest.skipUnless(__import__('os').environ.get('NAUI_TEST_GHIDRA') == '1',
+                         'Set NAUI_TEST_GHIDRA=1 with Ghidra, gcc and strip installed')
+    def test_real_named_and_stripped_binary_context(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, binary = root/'fixture.c', root/'fixture'
+            source.write_text('#include <stdio.h>\nvoid describe(void) { puts("Readable fixture message"); }\n'
+                              'int main(void) { describe(); return 0; }\n')
+            subprocess.run(['gcc', '-O0', '-o', str(binary), str(source)], check=True)
+            original = binary.read_bytes()
+            report = decompile(binary)
+            self.assertIn('Name: describe', report)
+            self.assertIn('Observed calls', report)
+            self.assertIn('Referenced text: Readable fixture message', report)
+            self.assertEqual(original, binary.read_bytes())
+            subprocess.run(['strip', str(binary)], check=True)
+            original = binary.read_bytes()
+            report = decompile(binary)
+            self.assertIn('Original name unavailable', report)
+            self.assertIn('Referenced text: Readable fixture message', report)
+            self.assertEqual(original, binary.read_bytes())

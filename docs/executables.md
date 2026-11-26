@@ -37,3 +37,17 @@ Reconstructed types and names can be incomplete or wrong. Output is not exact
 original source and is not guaranteed to compile. Editing/rebuilding binaries
 is not supported. Third-party Ghidra and JDK licenses apply to those tools;
 NaUi does not redistribute them.
+
+## Why names such as FUN_ appear
+
+Compilers often discard original function and variable names, comments, and
+source layout. `FUN_` and `DAT_` are generated address-based labels for unnamed
+functions and data. They are not the original programmer's chosen names.
+
+The code preview keeps names available to Ghidra and shows their symbol origin.
+Each function includes bounded summaries of observed calls and directly referenced
+strings, where analysis finds them. These annotations describe evidence, not a
+guessed purpose. Missing annotations do not mean a function has no calls or text.
+Matching debug symbols or original source may restore more names; NaUi does not
+currently offer a debug-symbol import picker. Full interactive analysis remains
+available in Ghidra.

@@ -13,15 +13,66 @@ import ghidra.app.decompiler.DecompInterface;
 import ghidra.app.decompiler.DecompileResults;
 import ghidra.program.model.listing.Function;
 import ghidra.program.model.listing.FunctionIterator;
+import ghidra.program.model.listing.Instruction;
+import ghidra.program.model.listing.InstructionIterator;
+import ghidra.program.model.listing.Data;
+import ghidra.program.model.symbol.Reference;
+import ghidra.program.model.symbol.SourceType;
+import java.util.TreeSet;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class NauiDecompile extends GhidraScript {
+    // Binary text is untrusted: keep it inside one bounded comment line.
+    private String comment(Object value) {
+        return String.valueOf(value).replace("*/", "* /").replace("\r", "\\r")
+            .replace("\n", "\\n").replace("\t", "\\t");
+    }
+    private String context(Function function) throws Exception {
+        StringBuilder text = new StringBuilder("\n/* Function at " + function.getEntryPoint() + "\n");
+        SourceType source = function.getSymbol().getSource();
+        text.append(" * Name: ").append(comment(function.getName())).append(" [").append(source).append("]\n");
+        if (source == SourceType.DEFAULT) {
+            text.append(" * Original name unavailable; this address-based name is a generated placeholder.\n");
+        } else {
+            text.append(" * Non-default symbol retained by analysis/import; not proof of the original source spelling.\n");
+        }
+        TreeSet<String> calls = new TreeSet<>();
+        for (Function called : function.getCalledFunctions(monitor)) {
+            if (calls.size() >= 16) break;
+            calls.add(comment(called.getName()));
+        }
+        if (!calls.isEmpty()) text.append(" * Observed calls (up to 16): ").append(String.join(", ", calls)).append("\n");
+        if (calls.contains("atexit") || calls.contains("_atexit"))
+            text.append(" * API context: atexit registers a callback to run when the process exits.\n");
+        if (calls.contains("InitializeSListHead"))
+            text.append(" * API context: InitializeSListHead initializes a singly linked list header.\n");
+        TreeSet<String> strings = new TreeSet<>();
+        InstructionIterator instructions = currentProgram.getListing().getInstructions(function.getBody(), true);
+        int scanned = 0;
+        while (instructions.hasNext() && scanned++ < 2000 && strings.size() < 8 && !monitor.isCancelled()) {
+            Instruction instruction = instructions.next();
+            for (Reference reference : instruction.getReferencesFrom()) {
+                Data data = currentProgram.getListing().getDataContaining(reference.getToAddress());
+                if (data != null && data.hasStringValue()) {
+                    String value = String.valueOf(data.getValue());
+                    if (value.length() > 160) value = value.substring(0, 160) + "…";
+                    strings.add(comment(value));
+                    if (strings.size() >= 8) break;
+                }
+            }
+        }
+        for (String value : strings) text.append(" * Referenced text: ").append(value).append("\n");
+        return text.append(" */").toString();
+    }
     public void run() throws Exception {
         DecompInterface decompiler = new DecompInterface();
         try (PrintWriter out = new PrintWriter(getScriptArgs()[0], StandardCharsets.UTF_8)) {
             out.println("/* Reconstructed C-like pseudocode, NOT original source.\n" +
                 " * Names/types may be inferred or missing. Not guaranteed compilable.\n" +
+                " * FUN_ = unnamed function; DAT_ = unnamed data; local_/param_ = inferred variables.\n" +
+                " * Original names/comments are often removed by compilation. Matching symbols or source are needed to restore them.\n" +
+                " * Context below reports observed calls and text, not a guessed function purpose.\n" +
                 " * Preview: first 100 functions, 5 seconds per function, 2 MiB output.\n */\n");
             if (!decompiler.openProgram(currentProgram)) throw new IOException("Cannot open program in decompiler");
             FunctionIterator functions = currentProgram.getFunctionManager().getFunctions(true);
@@ -30,7 +81,9 @@ public class NauiDecompile extends GhidraScript {
                 Function function = functions.next();
                 if (function.isExternal()) continue;
                 count++;
-                out.println("\n/* Function at " + function.getEntryPoint() + " */");
+                String details = context(function);
+                if (chars + details.length() > 2000000) break;
+                out.println(details); chars += details.length();
                 DecompileResults result = decompiler.decompileFunction(function, 5, monitor);
                 if (result.decompileCompleted()) {
                     String code = result.getDecompiledFunction().getC();

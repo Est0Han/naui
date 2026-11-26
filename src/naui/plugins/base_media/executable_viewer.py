@@ -13,6 +13,7 @@ class ExecutableViewer(PreviewViewer):
         self.decompile_running = False
         self.code_button = Gtk.Button(label='Decompile to C-like code')
         self.code_button.set_sensitive(False)
+        self.code_button.set_tooltip_text('Show reconstructed code, available symbol names, calls and referenced text. Missing original names cannot be recovered from stripped code alone.')
         self.signals.connect(self.code_button, 'clicked', lambda *_: self.show_code())
         self.append(self.code_button)
         self.pages = Gtk.Stack(hexpand=True, vexpand=True)
@@ -82,7 +83,7 @@ class ExecutableViewer(PreviewViewer):
             scroll.set_child(view)
             self.pages.add_titled(scroll, 'Code', 'Code')
             self.pages.set_visible_child_name('Code')
-            self.status.set_text('Reconstructed C-like code • partial preview • not original source')
+            self.status.set_text('Reconstructed code with symbol, call and text context • not original source')
         self.window.work(lambda: decompile(path, cancelled), finished)
 
     def close(self):
