@@ -1,0 +1,57 @@
+name: Linux regression tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Install distro bindings
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-gi gir1.2-gtk-4.0 gir1.2-vte-3.91 gir1.2-gtksource-5 gir1.2-gdkpixbuf-2.0 webp-pixbuf-loader openssh-client desktop-file-utils ffmpeg xvfb dbus-x11 libgtk-4-media-gstreamer gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-libav
+      - name: Syntax and headless regression checks
+        env:
+          PYTHONPATH: src
+          PYTHONFAULTHANDLER: '1'
+          G_DEBUG: fatal-warnings
+        run: |
+          python3 -m compileall -q src tests
+          python3 -m unittest discover -s tests -v
+          sh -n install.sh uninstall.sh scripts/install.sh scripts/uninstall.sh
+      - name: Install local Pyright for code-navigation acceptance
+        run: npm install --prefix "$RUNNER_TEMP/naui-pyright" pyright
+      - name: Real Pyright stdio and device mapping
+        env:
+          PYTHONPATH: src
+          PYTHONFAULTHANDLER: '1'
+          G_DEBUG: fatal-warnings
+        run: |
+          export NAUI_TEST_PYRIGHT_COMMAND="$RUNNER_TEMP/naui-pyright/node_modules/.bin/pyright-langserver --stdio"
+          python3 -m unittest discover -s tests -p test_lsp.py -v
+      - name: Native GUI and repeated shutdown on a virtual desktop
+        env:
+          PYTHONPATH: src
+          PYTHONFAULTHANDLER: '1'
+          G_DEBUG: fatal-warnings
+          GSK_RENDERER: cairo
+          GSETTINGS_BACKEND: memory
+          GTK_A11Y: none
+        run: |
+          export NAUI_TEST_PYRIGHT_COMMAND="$RUNNER_TEMP/naui-pyright/node_modules/.bin/pyright-langserver --stdio"
+          xvfb-run -a dbus-run-session -- python3 tests/gui_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/media_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/workspace_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/code_navigation_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/transfer_lifecycle_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/watch_runner_git_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/terminal_tabs_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/sidebar_git_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/plugin_manager_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/ai_agents_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/shutdown_smoke.py --iterations 10
+          xvfb-run -a dbus-run-session -- python3 tests/executable_smoke.py
+          xvfb-run -a dbus-run-session -- python3 tests/rpf_smoke.py

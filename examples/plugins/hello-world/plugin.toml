@@ -1,0 +1,8 @@
+id = "hello-world"
+name = "Hello World"
+version = "0.1.0"
+api_version = 1
+entrypoint = "plugin.py"
+description = "A notification command using the public SDK"
+[permissions]
+commands = true

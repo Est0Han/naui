@@ -1,0 +1,10 @@
+id = "file-action"
+name = "Inspect File"
+version = "0.1.0"
+api_version = 1
+entrypoint = "plugin.py"
+description = "Read the clicked file on its original device"
+[permissions]
+commands = true
+filesystem_read = true
+ssh = true

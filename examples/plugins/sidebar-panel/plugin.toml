@@ -1,0 +1,8 @@
+id = "sidebar-panel"
+name = "Sidebar Panel"
+version = "0.1.0"
+api_version = 1
+entrypoint = "plugin.py"
+description = "A core-owned panel with a button"
+[permissions]
+views = true

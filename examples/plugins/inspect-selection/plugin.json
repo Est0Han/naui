@@ -1,0 +1,6 @@
+{
+  "id": "inspect-selection",
+  "name": "Inspect Selection Example",
+  "api_version": 1,
+  "permissions": ["commands", "filesystem_read", "remote_access"]
+}

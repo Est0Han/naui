@@ -1,0 +1,12 @@
+id = "right-panel"
+name = "Right Panel Example"
+version = "0.1.0"
+api_version = 1
+entrypoint = "plugin.py"
+description = "Persistent right-side panel with text and a message composer"
+[permissions]
+views = true
+commands = true
+[ui]
+right_panel = true
+command_palette = true

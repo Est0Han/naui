@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+"""Run directly from a checkout, without pip installation."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+from naui.__main__ import main
+
+raise SystemExit(main())

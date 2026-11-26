@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Naui
+Comment=Terminal, SSH, file editor and media previews
+Exec=@EXEC@
+Icon=naui
+Terminal=false
+Type=Application
+Categories=Development;
+Keywords=terminal;ssh;editor;image;audio;video;
+StartupNotify=true

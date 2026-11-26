@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "naui"
+dynamic = ["version"]
+description = "A local GTK terminal, graphical editor and media viewer over OpenSSH"
+requires-python = ">=3.10"
+dependencies = ["tomli>=2; python_version < '3.11'"]
+license = {text = "MIT"}
+
+[project.urls]
+Homepage = "https://github.com/Est0Han/naui"
+Repository = "https://github.com/Est0Han/naui"
+Issues = "https://github.com/Est0Han/naui/issues"
+
+[project.scripts]
+naui = "naui.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "naui.__version__"}
+
+[tool.ruff]
+line-length = 100
+
+[tool.setuptools.data-files]
+"share/naui/docs/plugin-development" = ["docs/plugin-development/*.md"]
+"share/naui/examples/plugins/hello-world" = ["examples/plugins/hello-world/plugin.toml", "examples/plugins/hello-world/plugin.py", "examples/plugins/hello-world/README.md"]
+"share/naui/examples/plugins/hello-world/tests" = ["examples/plugins/hello-world/tests/test_plugin.py"]
+"share/naui/examples/plugins/sidebar-panel" = ["examples/plugins/sidebar-panel/plugin.toml", "examples/plugins/sidebar-panel/plugin.py", "examples/plugins/sidebar-panel/README.md"]
+"share/naui/examples/plugins/sidebar-panel/tests" = ["examples/plugins/sidebar-panel/tests/test_plugin.py"]
+"share/naui/examples/plugins/file-action" = ["examples/plugins/file-action/plugin.toml", "examples/plugins/file-action/plugin.py", "examples/plugins/file-action/README.md"]
+"share/naui/examples/plugins/file-action/tests" = ["examples/plugins/file-action/tests/test_plugin.py"]
+"share/naui/examples/plugins/terminal-command" = ["examples/plugins/terminal-command/plugin.toml", "examples/plugins/terminal-command/plugin.py", "examples/plugins/terminal-command/README.md"]
+"share/naui/examples/plugins/terminal-command/tests" = ["examples/plugins/terminal-command/tests/test_plugin.py"]

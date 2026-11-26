@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Original MIT-licensed placeholder artwork. Replace this file for all packaging. -->
+  <rect x="16" y="16" width="224" height="224" rx="44" fill="#181c25"/>
+  <rect x="34" y="50" width="188" height="156" rx="16" fill="#2a3242"/>
+  <path d="m56 88 22 22-22 22" fill="none" stroke="#87deb6" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M90 134h26M140 86h58M140 110h42M140 134h58M56 168h142" fill="none" stroke="#a2b9e8" stroke-width="10" stroke-linecap="round"/>
+</svg>

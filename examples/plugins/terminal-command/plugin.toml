@@ -1,0 +1,11 @@
+id = "terminal-command"
+name = "Terminal Command"
+version = "0.1.0"
+api_version = 1
+entrypoint = "plugin.py"
+description = "Run pwd in a real terminal on the selected device"
+[permissions]
+commands = true
+filesystem_read = true
+terminal = true
+ssh = true
